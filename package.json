@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "fetch-skills": "bun run scripts/fetch-skills.ts"
+    "fetch-skills": "bun run scripts/fetch-skills.ts",
+    "build:mac": "./scripts/build-mac.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
