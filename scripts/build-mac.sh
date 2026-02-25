@@ -28,17 +28,28 @@ for var in "${REQUIRED_VARS[@]}"; do
     fi
 done
 
-echo "Building Skill Studio for macOS..."
-echo "  Apple ID: $APPLE_ID"
-echo "  Team ID: $APPLE_TEAM_ID"
-echo "  Signing Identity: $APPLE_SIGNING_IDENTITY"
+echo "============================================"
+echo "  Building Skill Studio for macOS"
+echo "============================================"
+echo ""
+echo "Notarization credentials loaded from .env.local:"
+echo "  APPLE_ID: $APPLE_ID"
+echo "  APPLE_TEAM_ID: $APPLE_TEAM_ID"
+echo "  APPLE_SIGNING_IDENTITY: $APPLE_SIGNING_IDENTITY"
+echo ""
+echo "Starting build with signing and notarization..."
 echo ""
 
 cd "$PROJECT_DIR"
 
-# Build with Tauri
-npm run tauri build -- --bundles dmg
+# Build with Tauri (uses bun as configured in tauri.conf.json)
+bun run tauri build --bundles dmg
 
 echo ""
-echo "Build complete!"
+echo "============================================"
+echo "  Build complete!"
+echo "============================================"
+echo ""
 echo "DMG location: src-tauri/target/release/bundle/dmg/"
+echo ""
+ls -la "$PROJECT_DIR/src-tauri/target/release/bundle/dmg/" 2>/dev/null || echo "DMG not found - check build output above for errors"
