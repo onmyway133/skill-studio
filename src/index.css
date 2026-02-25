@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f8f8f8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #e5e5e5;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1f1f1f;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a3a3a3;
+    --text-muted: #737373;
+    --border: #262626;
+    --accent: #818cf8;
+    --accent-hover: #a5b4fc;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Markdown preview styling */
+.wmde-markdown {
+  background-color: transparent !important;
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+}
+
+.wmde-markdown pre {
+  background-color: var(--bg-tertiary) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+}
+
+.wmde-markdown code {
+  background-color: var(--bg-tertiary) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 13px !important;
+}
+
+.wmde-markdown pre code {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3 {
+  border-bottom: none !important;
+  margin-top: 24px !important;
+  margin-bottom: 12px !important;
+  color: var(--text-primary) !important;
+}
+
+.wmde-markdown h1:first-child,
+.wmde-markdown h2:first-child,
+.wmde-markdown h3:first-child {
+  margin-top: 0 !important;
+}
+
+.wmde-markdown p,
+.wmde-markdown li {
+  color: var(--text-primary) !important;
+}
+
+.wmde-markdown blockquote {
+  border-left: 3px solid var(--accent) !important;
+  padding-left: 16px !important;
+  color: var(--text-secondary) !important;
+}
+
+.wmde-markdown a {
+  color: var(--accent) !important;
+}
+
+.wmde-markdown table {
+  border-collapse: collapse !important;
+}
+
+.wmde-markdown table th,
+.wmde-markdown table td {
+  border: 1px solid var(--border) !important;
+  padding: 8px 12px !important;
+}
+
+.wmde-markdown table th {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.wmde-markdown hr {
+  border-color: var(--border) !important;
+}
+
+.wmde-markdown strong {
+  color: var(--text-primary) !important;
+}

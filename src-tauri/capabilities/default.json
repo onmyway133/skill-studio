@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.tauri.app/desktop/capability",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "shell:allow-execute",
+    "fs:default"
+  ]
+}
