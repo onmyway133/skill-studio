@@ -255,20 +255,22 @@ export function Sidebar({
                   Sources
                 </span>
                 <span className="text-xs text-[var(--text-muted)] ml-auto bg-[var(--bg-tertiary)] px-1.5 py-0.5 rounded">
-                  {repoGroups.length}
+                  {filteredRepoGroups.length}
                 </span>
               </button>
               {sourcesExpanded && (
                 <div className="pb-2">
-                  {/* Add Repo Button */}
-                  <button
-                    onClick={() => setShowAddRepo(true)}
-                    className="w-full px-3 py-2 flex items-center gap-2 text-sm text-[var(--accent)] hover:bg-[var(--bg-tertiary)] cursor-pointer mx-2 rounded-lg"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Repository</span>
-                  </button>
-                  {repoGroups.map((group) => {
+                  {/* Add Repo Button - only show on "all" filter */}
+                  {filter === "all" && (
+                    <button
+                      onClick={() => setShowAddRepo(true)}
+                      className="w-full px-3 py-2 flex items-center gap-2 text-sm text-[var(--accent)] hover:bg-[var(--bg-tertiary)] cursor-pointer mx-2 rounded-lg"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Repository</span>
+                    </button>
+                  )}
+                  {filteredRepoGroups.map((group) => {
                     const repoKey = `${group.owner}/${group.repo}`;
                     const isFavorite = isRepoFavorite(repoKey);
                     return (

@@ -10,7 +10,6 @@ fn get_library_path(app: &tauri::AppHandle) -> PathBuf {
     if let Ok(resource_dir) = app.path().resource_dir() {
         let lib_path = resource_dir.join("library");
         if lib_path.join("catalog.json").exists() {
-            eprintln!("[DEBUG] Using resource_dir library: {:?}", lib_path);
             return lib_path;
         }
     }
@@ -20,13 +19,11 @@ fn get_library_path(app: &tauri::AppHandle) -> PathBuf {
         if let Some(exe_dir) = exe_path.parent() {
             let lib_path = exe_dir.join("library");
             if lib_path.join("catalog.json").exists() {
-                eprintln!("[DEBUG] Using exe_dir library: {:?}", lib_path);
                 return lib_path;
             }
         }
     }
 
-    eprintln!("[DEBUG] Library path not found, using fallback");
     PathBuf::from(".").join("library")
 }
 
@@ -270,25 +267,17 @@ pub async fn get_all_skills(app: tauri::AppHandle) -> Result<Vec<Skill>, String>
     let mut all_sources: Vec<RepoSource> = Vec::new();
 
     // Add catalog repos
-    eprintln!("[DEBUG] Catalog path: {:?}, exists: {}", catalog_path, catalog_path.exists());
-    match fs::read_to_string(&catalog_path) {
-        Ok(catalog_content) => {
-            match serde_json::from_str::<Catalog>(&catalog_content) {
-                Ok(catalog) => {
-                    eprintln!("[DEBUG] Loaded catalog with {} repos", catalog.repos.len());
-                    for catalog_repo in catalog.repos {
-                        if let Some((owner, repo)) = catalog_repo.url.split_once('/') {
-                            all_sources.push(RepoSource {
-                                owner: owner.to_string(),
-                                repo: repo.to_string(),
-                            });
-                        }
-                    }
+    if let Ok(catalog_content) = fs::read_to_string(&catalog_path) {
+        if let Ok(catalog) = serde_json::from_str::<Catalog>(&catalog_content) {
+            for catalog_repo in catalog.repos {
+                if let Some((owner, repo)) = catalog_repo.url.split_once('/') {
+                    all_sources.push(RepoSource {
+                        owner: owner.to_string(),
+                        repo: repo.to_string(),
+                    });
                 }
-                Err(e) => eprintln!("[DEBUG] Failed to parse catalog: {}", e),
             }
         }
-        Err(e) => eprintln!("[DEBUG] Failed to read catalog: {}", e),
     }
 
     // Add custom repos (avoid duplicates)
@@ -306,13 +295,10 @@ pub async fn get_all_skills(app: tauri::AppHandle) -> Result<Vec<Skill>, String>
 
     let mut skills = Vec::new();
 
-    eprintln!("[DEBUG] get_all_skills: {} sources, {} fetched repos", all_sources.len(), fetched_repos.repos.len());
-
     // Load skills from cache for each fetched repo
     for source in all_sources {
         let repo_key = format!("{}/{}", source.owner, source.repo);
         let is_fetched = fetched_repos.repos.contains_key(&repo_key);
-        eprintln!("[DEBUG] Checking {}: is_fetched={}", repo_key, is_fetched);
 
         if is_fetched {
             // Try to load from cache first
@@ -331,7 +317,6 @@ pub async fn get_all_skills(app: tauri::AppHandle) -> Result<Vec<Skill>, String>
         }
     }
 
-    eprintln!("[DEBUG] get_all_skills returning {} total skills", skills.len());
     Ok(skills)
 }
 
@@ -400,29 +385,11 @@ fn load_cached_skills(owner: &str, repo: &str) -> Option<Vec<Skill>> {
     let data_path = get_data_path();
     let cache_path = data_path.join("repos").join(owner).join(repo).join("_skills_cache.json");
 
-    eprintln!("[DEBUG] Loading cache for {}/{} from {:?}", owner, repo, cache_path);
-
     if cache_path.exists() {
-        match fs::read_to_string(&cache_path) {
-            Ok(content) => {
-                match serde_json::from_str::<Vec<Skill>>(&content) {
-                    Ok(skills) => {
-                        eprintln!("[DEBUG] Loaded {} skills from cache", skills.len());
-                        Some(skills)
-                    }
-                    Err(e) => {
-                        eprintln!("[DEBUG] Failed to parse cache: {}", e);
-                        None
-                    }
-                }
-            }
-            Err(e) => {
-                eprintln!("[DEBUG] Failed to read cache file: {}", e);
-                None
-            }
-        }
+        fs::read_to_string(&cache_path)
+            .ok()
+            .and_then(|content| serde_json::from_str(&content).ok())
     } else {
-        eprintln!("[DEBUG] Cache file does not exist");
         None
     }
 }
