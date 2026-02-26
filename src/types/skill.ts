@@ -49,6 +49,7 @@ export interface RepoGroup {
   repo: string;
   skills: Skill[];
   isFetched: boolean;
+  isCustom?: boolean;
 }
 
 export interface RepoInfo {

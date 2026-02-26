@@ -557,6 +557,27 @@ pub async fn get_custom_repos() -> Result<Vec<CustomRepo>, String> {
     Ok(load_custom_repos().repos)
 }
 
+#[tauri::command]
+pub async fn remove_custom_repo(
+    owner: String,
+    repo: String,
+) -> Result<String, String> {
+    let mut custom = load_custom_repos();
+    let repo_key = format!("{}/{}", owner, repo);
+
+    // Remove from custom repos
+    let initial_len = custom.repos.len();
+    custom.repos.retain(|r| !(r.owner == owner && r.repo == repo));
+
+    if custom.repos.len() == initial_len {
+        return Err(format!("Custom repo {} not found", repo_key));
+    }
+
+    save_custom_repos(&custom)?;
+
+    Ok(format!("Removed custom repo {}", repo_key))
+}
+
 // Favorites
 fn get_favorites_path() -> PathBuf {
     dirs::config_dir()

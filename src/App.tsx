@@ -31,7 +31,7 @@ function App() {
         );
         setSelection({
           type: "repo",
-          repo: { ...selection.repo, skills: repoSkills, isFetched: updatedRepo.isFetched }
+          repo: { ...selection.repo, skills: repoSkills, isFetched: updatedRepo.isFetched, isCustom: updatedRepo.isCustom }
         });
       }
     }

@@ -13,6 +13,7 @@ import {
   Plus,
   X,
   Star,
+  Trash2,
 } from "lucide-react";
 import { Skill, RepoInfo, RepoGroup, Selection, Favorites } from "../types/skill";
 
@@ -21,6 +22,7 @@ interface ContextMenuState {
   y: number;
   type: "repo" | "skill";
   repoKey?: string;
+  isCustomRepo?: boolean;
   skillId?: string;
 }
 
@@ -78,9 +80,9 @@ export function Sidebar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleRepoContextMenu = (e: React.MouseEvent, repoKey: string) => {
+  const handleRepoContextMenu = (e: React.MouseEvent, repoKey: string, isCustom: boolean) => {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY, type: "repo", repoKey });
+    setContextMenu({ x: e.clientX, y: e.clientY, type: "repo", repoKey, isCustomRepo: isCustom });
   };
 
   const handleSkillContextMenu = (e: React.MouseEvent, skillId: string) => {
@@ -99,6 +101,7 @@ export function Sidebar({
         repo: repo.repo,
         skills: repoSkills,
         isFetched: repo.isFetched,
+        isCustom: repo.isCustom,
       };
     });
   }, [repos, skills]);
@@ -160,6 +163,17 @@ export function Sidebar({
       setAddError(String(e));
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleRemoveRepo = async (repoKey: string) => {
+    const [owner, repo] = repoKey.split("/");
+    try {
+      await invoke("remove_custom_repo", { owner, repo });
+      setContextMenu(null);
+      onRefresh();
+    } catch (e) {
+      console.error("Failed to remove repo:", e);
     }
   };
 
@@ -277,7 +291,7 @@ export function Sidebar({
                       <button
                         key={repoKey}
                         onClick={() => onSelectionChange({ type: "repo", repo: group })}
-                        onContextMenu={(e) => handleRepoContextMenu(e, repoKey)}
+                        onContextMenu={(e) => handleRepoContextMenu(e, repoKey, group.isCustom || false)}
                         className={`w-full px-3 py-2 flex items-center gap-2 text-sm text-left transition-colors mx-2 rounded-lg ${
                           isRepoSelected(group)
                             ? "bg-[var(--accent)]/15 text-[var(--accent)] font-medium"
@@ -421,16 +435,27 @@ export function Sidebar({
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           {contextMenu.type === "repo" && contextMenu.repoKey && (
-            <button
-              onClick={() => {
-                onToggleRepoFavorite(contextMenu.repoKey!);
-                setContextMenu(null);
-              }}
-              className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--bg-tertiary)] flex items-center gap-2 text-[var(--text-primary)]"
-            >
-              <Star className={`w-4 h-4 ${isRepoFavorite(contextMenu.repoKey) ? "text-amber-500 fill-amber-500" : "text-[var(--text-muted)]"}`} />
-              {isRepoFavorite(contextMenu.repoKey) ? "Remove from Favorites" : "Add to Favorites"}
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  onToggleRepoFavorite(contextMenu.repoKey!);
+                  setContextMenu(null);
+                }}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--bg-tertiary)] flex items-center gap-2 text-[var(--text-primary)]"
+              >
+                <Star className={`w-4 h-4 ${isRepoFavorite(contextMenu.repoKey) ? "text-amber-500 fill-amber-500" : "text-[var(--text-muted)]"}`} />
+                {isRepoFavorite(contextMenu.repoKey) ? "Remove from Favorites" : "Add to Favorites"}
+              </button>
+              {contextMenu.isCustomRepo && (
+                <button
+                  onClick={() => handleRemoveRepo(contextMenu.repoKey!)}
+                  className="w-full px-3 py-2 text-sm text-left hover:bg-[var(--bg-tertiary)] flex items-center gap-2 text-red-500"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Remove Repository
+                </button>
+              )}
+            </>
           )}
           {contextMenu.type === "skill" && contextMenu.skillId && (
             <button

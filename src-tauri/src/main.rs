@@ -6,7 +6,7 @@ mod models;
 use commands::{
     get_all_skills, get_catalog, get_fetched_repos, get_installed_skills,
     get_settings, install_skill, save_settings, uninstall_skill, fetch_repo,
-    add_custom_repo, get_custom_repos, get_repo_readme, get_favorites,
+    add_custom_repo, remove_custom_repo, get_custom_repos, get_repo_readme, get_favorites,
     toggle_favorite_skill, toggle_favorite_repo, reveal_skill_in_finder, get_all_repos
 };
 
@@ -26,6 +26,7 @@ fn main() {
             install_skill,
             uninstall_skill,
             add_custom_repo,
+            remove_custom_repo,
             get_custom_repos,
             get_repo_readme,
             get_favorites,
