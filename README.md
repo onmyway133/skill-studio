@@ -24,7 +24,7 @@ Skill Studio makes it easy to discover and manage skills for Claude Code. Skills
 ## Screenshot
 
 <p align="center">
-  <img src="images/app.png" alt="Skill Studio Screenshot" width="800">
+  <img src="images/banner.png" alt="Skill Studio Screenshot" width="800">
 </p>
 
 ## Development
