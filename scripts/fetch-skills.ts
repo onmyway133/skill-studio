@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -82,6 +82,10 @@ const LIBRARY_PATH = path.join(__dirname, "..", "library");
 const SKILLS_PATH = path.join(LIBRARY_PATH, "skills");
 const INDEX_PATH = path.join(LIBRARY_PATH, "index.json");
 
+function runGit(args: string[], cwd?: string): void {
+  execFileSync("git", args, { cwd, stdio: "inherit" });
+}
+
 function fetchRepository(repo: SkillRepository): void {
   const repoPath = path.join(SKILLS_PATH, repo.owner, repo.repo);
   const repoUrl = `https://github.com/${repo.owner}/${repo.repo}.git`;
@@ -89,7 +93,7 @@ function fetchRepository(repo: SkillRepository): void {
   if (fs.existsSync(repoPath)) {
     console.log(`Updating ${repo.owner}/${repo.repo}...`);
     try {
-      execSync("git pull", { cwd: repoPath, stdio: "inherit" });
+      runGit(["pull", "--ff-only"], repoPath);
     } catch (e) {
       console.log(`  Warning: Could not pull ${repo.owner}/${repo.repo}`);
     }
@@ -97,7 +101,7 @@ function fetchRepository(repo: SkillRepository): void {
     console.log(`Cloning ${repo.owner}/${repo.repo}...`);
     fs.mkdirSync(path.dirname(repoPath), { recursive: true });
     try {
-      execSync(`git clone --depth 1 ${repoUrl} ${repoPath}`, { stdio: "inherit" });
+      runGit(["clone", "--depth", "1", repoUrl, repoPath]);
     } catch (e) {
       console.log(`  Warning: Could not clone ${repo.owner}/${repo.repo}`);
     }
